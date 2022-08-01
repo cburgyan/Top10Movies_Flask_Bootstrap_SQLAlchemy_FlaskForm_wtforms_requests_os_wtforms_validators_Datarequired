@@ -50,9 +50,23 @@ db.create_all()
 # db.session.commit()
 
 
+# new_movie = Movie(
+#     title="Dune",
+#     year=2021,
+#     description="A noble family becomes embroiled in a war for control over the galaxy's most valuable asset while its heir becomes troubled by visions of a dark future.",
+#     rating=8.0,
+#     ranking=10,
+#     review="This is a fantastic movie!",
+#     img_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.fkw6e2qh_lrjTTJH8FT1FwHaK-%26pid%3DApi&f=1"
+# )
+#
+# db.session.add(new_movie)
+# db.session.commit()
+
+
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", movies=Movie.query.all())
 
 
 if __name__ == '__main__':
