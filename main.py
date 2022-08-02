@@ -59,7 +59,7 @@ db.create_all()
 # db.session.commit()
 
 
-# new_movie = Movie(
+# new_movie2 = Movie(
 #     title="Dune",
 #     year=2021,
 #     description="A noble family becomes embroiled in a war for control over the galaxy's most valuable asset while its heir becomes troubled by visions of a dark future.",
@@ -69,7 +69,7 @@ db.create_all()
 #     img_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.fkw6e2qh_lrjTTJH8FT1FwHaK-%26pid%3DApi&f=1"
 # )
 #
-# db.session.add(new_movie)
+# db.session.add(new_movie2)
 # db.session.commit()
 
 
@@ -90,6 +90,12 @@ def edit_page(id):
     return render_template('edit.html', movie=movie, form=form)
 
 
+@app.route('/<id>')
+def delete_movie(id):
+    movie = Movie.query.filter_by(id=id).first()
+    db.session.delete(movie)
+    db.session.commit()
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
