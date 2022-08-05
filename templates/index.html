@@ -15,26 +15,26 @@
 <div class="container">
   <h1 class="heading">My Top 10 Movies</h1>
   <p class="description">These are my all time favourite movies.</p>
-   {% for index in range(movies|length) %}
+   {% for movie in movies %}
   <div class="card" >
-      {% set image_url = movies[index]['img_url'] %}
+      {% set image_url = movie['img_url'] %}
     <div class="front" style="background-image: url('{{ image_url }}');">
-        <p class="large">{{ index + 1 }}</p>
+        <p class="large">{{ movie['ranking'] }}</p>
     </div>
     <div class="back">
       <div>
-    <div class="title">{{ movies[index]['title'] }} <span class="release_date"></span>({{ movies[index]['year'] }})</div>
+    <div class="title">{{ movie['title'] }} <span class="release_date"></span>({{ movie['year'] }})</div>
         <div class="rating">
-            <label>{{ movies[index]['rating'] }}</label>
+            <label>{{ movie['rating'] }}</label>
           <i class="fas fa-star star"></i>
         </div>
-          <p class="review">"{{ movies[index]['review'] }}"</p>
+          <p class="review">"{{ movie['review'] }}"</p>
         <p class="overview">
-            {{ movies[index]['description'] }}
+            {{ movie['description'] }}
         </p>
 
-        <a href="{{ url_for('edit_page', id=movies[index]['id']) }}" class="button">Update</a>
-        <a href="{{ url_for('delete_movie', id=movies[index]['id']) }}" class="button delete-button">Delete</a>
+        <a href="{{ url_for('edit_page', id=movie['id']) }}" class="button">Update</a>
+        <a href="{{ url_for('delete_movie', id=movie['id']) }}" class="button delete-button">Delete</a>
 
       </div>
     </div>
@@ -43,7 +43,7 @@
 
 </div>
 <div class="container text-center add">
-<a href="#" class="button">Add Movie</a>
+<a href="{{ url_for('add_movie') }}" class="button">Add Movie</a>
 </div>
 
 {% endblock %}
