@@ -40,12 +40,14 @@ class Movie(db.Model):
         return f'<Movie {self.title}>'
 
 
+# Form For Rating and Reviewing A Movie
 class RateMovieForm(FlaskForm):
     rating = StringField('Your Rating Out of 10 e.g. 7.5', validators=[DataRequired()])
     review = StringField('Your Review', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 
+# Form For Searching For A Movie Title In The Movie Database (TMDB)
 class AddMovieForm(FlaskForm):
     title = StringField('Movie Title', validators=[DataRequired()])
     submit = SubmitField('Add Movie')
@@ -55,34 +57,7 @@ class AddMovieForm(FlaskForm):
 db.create_all()
 
 
-# new_movie = Movie(
-#     title="Phone Booth",
-#     year=2002,
-#     description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads to a jaw-dropping climax.",
-#     rating=7.3,
-#     ranking=10,
-#     review="My favourite character was the caller.",
-#     img_url="https://image.tmdb.org/t/p/w500/tjrX2oWRCM3Tvarz38zlZM7Uc10.jpg"
-# )
-#
-# db.session.add(new_movie)
-# db.session.commit()
-
-
-# new_movie2 = Movie(
-#     title="Dune",
-#     year=2021,
-#     description="A noble family becomes embroiled in a war for control over the galaxy's most valuable asset while its heir becomes troubled by visions of a dark future.",
-#     rating=8.0,
-#     ranking=10,
-#     review="This is a fantastic movie!",
-#     img_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.fkw6e2qh_lrjTTJH8FT1FwHaK-%26pid%3DApi&f=1"
-# )
-#
-# db.session.add(new_movie2)
-# db.session.commit()
-
-
+# Merge Helper Function To The Mergesort Function
 def merge(movies_list, l, m, r):
     n1 = m - l + 1
     n2 = r - m
@@ -120,6 +95,7 @@ def merge(movies_list, l, m, r):
         k += 2
 
 
+# Mergesort Function For Sorting By Moving Rating
 def mergesort(movies_list, l, r):
     if l < r:
         m = l + (r-l)//2
@@ -129,11 +105,13 @@ def mergesort(movies_list, l, r):
         merge(movies_list, l, m, r)
 
 
+# Rank Movies In movies_list In Order That They Are Listed
 def rank_ordered_movies(movies_list, length):
     for index in range(0, length):
         movies_list[index].ranking = index + 1
 
 
+# Home Page and Primary Display Page
 @app.route("/")
 def home():
     movie_list = Movie.query.all()
@@ -143,6 +121,7 @@ def home():
     return render_template("index.html", movies=movie_list)
 
 
+# Page For Editing Or Adding A Rating And Review
 @app.route("/edit/<id>", methods=['POST', 'GET'])
 def edit_page(id):
     form = RateMovieForm()
@@ -155,6 +134,7 @@ def edit_page(id):
     return render_template('edit.html', movie=movie, form=form)
 
 
+# Pivoting Page For Deleting That Quickly Redirects To Home Page
 @app.route('/<id>')
 def delete_movie(id):
     movie = Movie.query.filter_by(id=id).first()
@@ -163,6 +143,7 @@ def delete_movie(id):
     return redirect(url_for('home'))
 
 
+# Page For Searching For A Movie
 @app.route('/add', methods=['POST', 'GET'])
 def add_movie():
     global search_movie_list
@@ -183,6 +164,7 @@ def add_movie():
     return render_template('add.html', form=form)
 
 
+# Page For Selecting A Movie From Search Results Of /add Page
 @app.route('/select<id>')
 def select_movie(id):
     print("HELLO")
@@ -209,5 +191,7 @@ def select_movie(id):
     db.session.commit()
     return redirect(url_for('edit_page', id=id))
 
+
+# Run Flask Server
 if __name__ == '__main__':
     app.run(debug=True)
