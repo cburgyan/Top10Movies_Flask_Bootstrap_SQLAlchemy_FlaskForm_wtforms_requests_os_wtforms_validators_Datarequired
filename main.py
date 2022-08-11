@@ -57,67 +57,72 @@ class AddMovieForm(FlaskForm):
 db.create_all()
 
 
-# Merge Helper Function To The Mergesort Function
-def merge(movies_list, l, m, r):
-    n1 = m - l + 1
-    n2 = r - m
-
-    L = [0] * n1
-    R = [0] * n2
-
-    for i in range(0, n1):
-        L[i] = movies_list[l + i]
-
-    for j in range(0, n2):
-        R[j] = movies_list[m + 1 + j]
-
-    i = 0
-    j = 0
-    k = l
-
-    while i < n1 and j < n2:
-        if L[i].rating >= R[j].rating:
-            movies_list[k] = L[i]
-            i += 1
-        else:
-            movies_list[k] = R[j]
-            j += 1
-        k += 1
-
-    while i < n1:
-        movies_list[k] = L[i]
-        i += 1
-        k += 1
-
-    while j < n2:
-        movies_list[k] = R[j]
-        j += 1
-        k += 2
-
-
-# Mergesort Function For Sorting By Moving Rating
-def mergesort(movies_list, l, r):
-    if l < r:
-        m = l + (r-l)//2
-
-        mergesort(movies_list, l, m)
-        mergesort(movies_list, m + 1, r)
-        merge(movies_list, l, m, r)
+# # Merge Helper Function To The Mergesort Function
+# def merge(movies_list, l, m, r):
+#     n1 = m - l + 1
+#     n2 = r - m
+#
+#     L = [0] * n1
+#     R = [0] * n2
+#
+#     for i in range(0, n1):
+#         L[i] = movies_list[l + i]
+#
+#     for j in range(0, n2):
+#         R[j] = movies_list[m + 1 + j]
+#
+#     i = 0
+#     j = 0
+#     k = l
+#
+#     while i < n1 and j < n2:
+#         if L[i].rating >= R[j].rating:
+#             movies_list[k] = L[i]
+#             i += 1
+#         else:
+#             movies_list[k] = R[j]
+#             j += 1
+#         k += 1
+#
+#     while i < n1:
+#         movies_list[k] = L[i]
+#         i += 1
+#         k += 1
+#
+#     while j < n2:
+#         movies_list[k] = R[j]
+#         j += 1
+#         k += 2
+#
+#
+# # Mergesort Function For Sorting By Moving Rating
+# def mergesort(movies_list, l, r):
+#     if l < r:
+#         m = l + (r-l)//2
+#
+#         mergesort(movies_list, l, m)
+#         mergesort(movies_list, m + 1, r)
+#         merge(movies_list, l, m, r)
 
 
 # Rank Movies In movies_list In Order That They Are Listed
-def rank_ordered_movies(movies_list, length):
-    for index in range(0, length):
-        movies_list[index].ranking = index + 1
+def rank_ordered_movies(movies_list):
+    rank = 1
+    for movie in movies_list:
+        movie.ranking = rank
+        rank += 1
 
 
 # Home Page and Primary Display Page
 @app.route("/")
 def home():
-    movie_list = Movie.query.all()
-    num_of_movies = len(movie_list)
-    mergesort(movie_list, 0, num_of_movies - 1)
-    rank_ordered_movies(movie_list, num_of_movies)
+    # movie_list = Movie.query.all()
+    movie_list = Movie.query.order_by(Movie.rating).all()[::-1]
+    print(movie_list)
+
+    # num_of_movies = len(movie_list)
+    # mergesort(movie_list, 0, num_of_movies - 1)
+    rank_ordered_movies(movie_list)
     return render_template("index.html", movies=movie_list)
 
 
@@ -167,15 +172,15 @@ def add_movie():
 # Page For Selecting A Movie From Search Results Of /add Page
 @app.route('/select<id>')
 def select_movie(id):
-    print("HELLO")
-    print(id)
+    # print("HELLO")
+    # print(id)
     movie = {}
     for movie_element in search_movie_list:
-        print(movie_element['id'])
+        # print(movie_element['id'])
         if str(movie_element['id']) == str(id):
             movie = movie_element
-    print("Movie: ")
-    print(movie)
+    # print("Movie: ")
+    # print(movie)
     new_movie = Movie(
         id=id,
         title=movie['title'],
