@@ -116,10 +116,14 @@ def rank_ordered_movies(movies_list):
 # Home Page and Primary Display Page
 @app.route("/")
 def home():
-    # movie_list = Movie.query.all()
+    movie_to_delete_id = request.args.get('id')
+    if movie_to_delete_id is not None:
+        delete_movie(movie_to_delete_id)
+
     movie_list = Movie.query.order_by(Movie.rating).all()[::-1]
     print(movie_list)
 
+    # movie_list = Movie.query.all()
     # num_of_movies = len(movie_list)
     # mergesort(movie_list, 0, num_of_movies - 1)
     rank_ordered_movies(movie_list)
@@ -140,12 +144,12 @@ def edit_page(id):
 
 
 # Pivoting Page For Deleting That Quickly Redirects To Home Page
-@app.route('/<id>')
-def delete_movie(id):
-    movie = Movie.query.filter_by(id=id).first()
+# @app.route('/<id>')
+def delete_movie(movie_id):
+    movie = Movie.query.filter_by(id=movie_id).first()
     db.session.delete(movie)
     db.session.commit()
-    return redirect(url_for('home'))
+    # return redirect(url_for('home'))
 
 
 # Page For Searching For A Movie
