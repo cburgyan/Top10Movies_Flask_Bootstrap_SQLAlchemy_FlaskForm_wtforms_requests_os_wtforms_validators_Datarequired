@@ -82,6 +82,13 @@ def home():
     return render_template("index.html", movies=movie_list)
 
 
+# Pivoting Page For Deleting That Quickly Redirects To Home Page
+def delete_movie(movie_id):
+    movie = Movie.query.filter_by(id=movie_id).first()
+    db.session.delete(movie)
+    db.session.commit()
+
+
 # Page For Editing Or Adding A Rating And Review
 @app.route("/edit/<id>", methods=['POST', 'GET'])
 def edit_page(id):
@@ -93,13 +100,6 @@ def edit_page(id):
         db.session.commit()
         return redirect(url_for('home'))
     return render_template('edit.html', movie=movie, form=form)
-
-
-# Pivoting Page For Deleting That Quickly Redirects To Home Page
-def delete_movie(movie_id):
-    movie = Movie.query.filter_by(id=movie_id).first()
-    db.session.delete(movie)
-    db.session.commit()
 
 
 # Page For Searching For A Movie
@@ -124,15 +124,16 @@ def add_movie():
 
 
 # Page For Selecting A Movie From Search Results Of /add Page
-@app.route('/select<id>')
-def select_movie(id):
+@app.route('/select')
+def select_movie():
     movie = {}
+    movie_id = request.args.get('id')
     for movie_element in search_movie_list:
-        if str(movie_element['id']) == str(id):
+        if str(movie_element['id']) == str(movie_id):
             movie = movie_element
 
     new_movie = Movie(
-        id=id,
+        id=movie_id,
         title=movie['title'],
         year=movie['release_date'][:4],
         description=movie['overview'],
@@ -144,7 +145,7 @@ def select_movie(id):
 
     db.session.add(new_movie)
     db.session.commit()
-    return redirect(url_for('edit_page', id=id))
+    return redirect(url_for('edit_page', id=movie_id))
 
 
 # Run Flask Server
