@@ -12,8 +12,10 @@
 
 {% block content %}
 <div class="content">
+      {% set image_url = movie['img_url'] %}
   <h1 class="heading">{{ movie['title'] }}</h1>
-    <p class="description">Edit Movie Rating</p>
-    {{ wtf.quick_form(form, novalidate=True) }}
+  <p class="description">Edit Movie Rating</p>
+  <img src="{{movie['img_url']}}" style="width: 20%; margin-right: 2rem; ">
+  {{ wtf.quick_form(form, novalidate=True) }}
   </div>
 {% endblock %}
