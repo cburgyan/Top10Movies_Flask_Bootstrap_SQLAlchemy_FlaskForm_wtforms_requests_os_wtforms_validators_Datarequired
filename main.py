@@ -76,6 +76,7 @@ def home():
 
     # Order Movies By Rating
     movie_list = Movie.query.order_by(Movie.rating).all()[::-1]
+    movie_list = movie_list[:10]
 
     # Rank Movies By Order
     rank_ordered_movies(movie_list)
