@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 # Define Table/Record
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(250), unique=True, nullable=False)
+    title = db.Column(db.String(250), nullable=False)
     year = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(400), nullable=False)
     rating = db.Column(db.Float, nullable=False)
@@ -76,11 +76,13 @@ def home():
 
     # Order Movies By Rating
     movie_list = Movie.query.order_by(Movie.rating).all()[::-1]
-    movie_list = movie_list[:10]
+    full_page = request.args.get('full_page')
+    if not full_page:
+        movie_list = movie_list[:10]
 
     # Rank Movies By Order
     rank_ordered_movies(movie_list)
-    return render_template("index.html", movies=movie_list)
+    return render_template("index.html", movies=movie_list, full_page=full_page)
 
 
 # Pivoting Page For Deleting That Quickly Redirects To Home Page
@@ -93,7 +95,12 @@ def delete_movie(movie_id):
 # Page For Editing Or Adding A Rating And Review
 @app.route("/edit/<id>", methods=['POST', 'GET'])
 def edit_page(id):
-    form = RateMovieForm()
+    rating = request.args.get('rating')
+    review = request.args.get('review')
+    if rating or review:
+        form = RateMovieForm(rating=rating, review=review)
+    else:
+        form = RateMovieForm()
     movie = Movie.query.filter_by(id=id).first()
     if form.validate_on_submit():
         movie.rating = float(form.rating.data)
@@ -119,7 +126,7 @@ def add_movie():
 
         response = requests.get(TMDB_SEARCH_URL, params=parameters)
         search_movie_list = response.json()['results']
-        return render_template('select.html', movies_list=search_movie_list)
+        return render_template('select.html', movies_list=search_movie_list, TMDB_IMG_URL=TMDB_IMG_URL)
 
     return render_template('add.html', form=form)
 
@@ -143,10 +150,14 @@ def select_movie():
         review="",
         img_url=f'{TMDB_IMG_URL}{movie["poster_path"]}'
     )
-
-    db.session.add(new_movie)
-    db.session.commit()
-    return redirect(url_for('edit_page', id=movie_id))
+    movie_already_in_database = Movie.query.get(int(movie_id))
+    if not movie_already_in_database:
+        db.session.add(new_movie)
+        db.session.commit()
+    else:
+        rating = movie_already_in_database.rating
+        review = movie_already_in_database.review
+    return redirect(url_for('edit_page', id=movie_id, rating=rating, review=review))
 
 
 # Run Flask Server

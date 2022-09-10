@@ -33,7 +33,7 @@
             {{ movie['description'] }}
         </p>
 
-        <a href="{{ url_for('edit_page', id=movie['id']) }}" class="button">Update</a>
+        <a href="{{ url_for('edit_page', id=movie['id'], rating=movie['rating'], review=movie['review']) }}" class="button">Update</a>
         <a href="{{ url_for('home', id=movie['id']) }}" class="button delete-button">Delete</a>
 
       </div>
@@ -43,7 +43,16 @@
 
 </div>
 <div class="container text-center add">
-<a href="{{ url_for('add_movie') }}" class="button">Add Movie</a>
+<a href="{{ url_for('add_movie') }}" class="button btn-lg" style="font-size: 1.1rem;">Add Movie</a>
+</div>
+<br>
+<div class="container text-center">
+
+{% if full_page %}
+    <a href="{{ url_for('home') }}" class="button">Only Top 10</a>
+{% else %}
+    <a href="{{ url_for('home', full_page=True) }}" class="button">Full Movie List</a>
+{% endif %}
 </div>
 
 {% endblock %}
